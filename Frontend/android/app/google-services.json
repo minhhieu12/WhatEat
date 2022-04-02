@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "619061580327",
+    "project_id": "whateat-83348",
+    "storage_bucket": "whateat-83348.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:619061580327:android:5ce986b2f45e5a1d86b402",
+        "android_client_info": {
+          "package_name": "com.whateat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "619061580327-alsn9leo3cvn1l63p4f3ureqosld4ja5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXjb1HiTt_RoCFait3pF0k2787jBP0KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "619061580327-alsn9leo3cvn1l63p4f3ureqosld4ja5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
