@@ -125,6 +125,13 @@ class HomeController  {
             });
         }
     }
+
+    static getText(req, res) {
+        return res.json({
+            "isError": false,
+            "message": "hihi!",
+        })
+    }
 }
 
 module.exports = HomeController;
