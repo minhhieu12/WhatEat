@@ -45,10 +45,10 @@ class HomeController  {
 
 
         }
-        catch (e) {
+        catch (error) {
             return res.status(400).json({
                 "isError": true,
-                "message": e.message
+                "message": error.message
             });
         }
     }
@@ -57,10 +57,10 @@ class HomeController  {
             let email = req.body.email,
                 passWord = req.body.passWord;
 
-            if(!email || !passWord){
+            if (!email || !passWord) {
                 return res.status(400).json({
                     "isError": true,
-                    "message": "Các trường không được trống!"
+                    "message": "Các trường không được bỏ trống!"
                 });
             }
 
@@ -87,10 +87,10 @@ class HomeController  {
                 }
             })
         }
-        catch (e) {
+        catch (error) {
             return res.status(400).json({
                 "isError": true,
-                "message": e.message
+                "message": error.message
             });
         }
     }
