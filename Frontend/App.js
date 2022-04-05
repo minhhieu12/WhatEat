@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {SafeAreaView} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import auth from '@react-native-firebase/auth';
+//import auth from '@react-native-firebase/auth';
 
 import Main from './src/Main';
 
@@ -21,7 +21,8 @@ const App = () => {
   const [loaded, setLoaded] = useState(false);
   const [loggedIn, setLoggedIn] = useState();
 
-  useEffect(() => {
+  /*
+    useEffect(() => {
     auth()
     .onAuthStateChanged((user) => {
       if(!user){
@@ -34,6 +35,7 @@ const App = () => {
       }
     })
   })
+  */
 
   if(!loggedIn){
     return(

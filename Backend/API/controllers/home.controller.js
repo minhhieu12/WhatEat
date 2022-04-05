@@ -85,7 +85,7 @@ class HomeController  {
 
                 if (!bcrypt.compareSync(passWord, user.passWord)) {
                     return res.status(200).json({
-                        "isError": false,
+                        "isError": true,
                         "message": "Mật khẩu không chính xác!"
                     });
                 }

@@ -4,7 +4,7 @@ import { styles } from '../Login/style';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { NavigationContainer } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
-import auth from '@react-native-firebase/auth';
+//import auth from '@react-native-firebase/auth';
 
 function Login() {
     const navigation = useNavigation();
@@ -13,7 +13,7 @@ function Login() {
     const [password, setPassword] = useState('');
 
     const onSignIn = () => {
-        fetch('http://192.168.10.37:3000/login', {
+        fetch('http://192.168.1.253:3000/login', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -26,7 +26,11 @@ function Login() {
         })
         .then((response) => response.json())
         .then((json) => {
-            alert(json.message);
+            if(!json.isError){
+                alert('Đăng nhập thành công!')
+            } else {
+                alert('Đăng nhập thất bại!')
+            }
         })
         .catch((error) => {
             alert(error);
