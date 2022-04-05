@@ -13,6 +13,25 @@ function Login() {
     const [password, setPassword] = useState('');
 
     const onSignIn = () => {
+        fetch('http://192.168.10.37:3000/login', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                passWord: password
+            })
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            alert(json.message);
+        })
+        .catch((error) => {
+            alert(error);
+        })
+        /*
         auth()
         .signInWithEmailAndPassword(email, password)
         .then((result) => {
@@ -21,6 +40,7 @@ function Login() {
         .catch((error) => {
             console.log(error);
         });
+        */
     }
 
     const [hidePass, setHidePass] = useState(true);
@@ -54,11 +74,11 @@ function Login() {
                         placeholder="Mật khẩu"
                         secureTextEntry={hidePass ? true : false}
                         onChangeText={password => setPassword(password)}
-
+                        style={{width: 275}}
                     />
                     <FontAwesome5Icon 
                         name={hidePass ? 'eye-slash' : 'eye'}
-                        size={14} style={{marginTop: 17, marginLeft: 200}}
+                        size={14} style={{marginTop: 17, marginLeft: 20}}
                         onPress={() => setHidePass(!hidePass)}
                     />
                 </View>

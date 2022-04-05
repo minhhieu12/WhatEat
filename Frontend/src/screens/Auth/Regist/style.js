@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
       flex: 1,
       flexDirection: 'column',
       backgroundColor: 'white',
-      height: 800
+      paddingBottom: 50
     },
     logo: {
         width: 100,
@@ -49,5 +49,12 @@ export const styles = StyleSheet.create({
         borderWidth: 0.5, 
         borderRadius: 8,
         flexDirection: 'row'
-    }
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        borderRadius: 8,
+        borderWidth: 0.5,
+        alignItems: 'center',
+        paddingLeft: 5,
+    },
   });
