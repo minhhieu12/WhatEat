@@ -6,7 +6,9 @@ const UserSchemaModel = new Schema({
     fullName: {type: String, default: ''},
     email: {type: String, default: ''},
     userName: {type: String, default: ''},
-    passWord: {type: String}
+    passWord: {type: String},
+    accessToken: {type: String},
+    refreshToken: {type: String}
 });
 
 UserSchemaModel.methods.generateHash= (passWord) => {
