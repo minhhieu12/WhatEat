@@ -1,5 +1,9 @@
 const UserModel = require('../models/user.model');
 const bcrypt = require("bcrypt");
+const authMethod = require('../config/auth.methods');
+const randToken = require('rand-token');
+const jwtVariable = require('../config/jwt');
+require('dotenv').config();
 
 class HomeController  {
     static async index(req, res) {
@@ -52,7 +56,8 @@ class HomeController  {
             });
         }
     }
-    static login(req, res){
+
+    static async login(req, res){
         try {
             let email = req.body.email,
                 passWord = req.body.passWord;
@@ -64,28 +69,54 @@ class HomeController  {
                 });
             }
 
-            UserModel.findOne({email: email}, (err, user) => {
+            // lấy config key
+            let accessTokenLife = process.env.ACCESS_TOKEN_LIFE,
+                accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+            console.log(accessTokenLife, accessTokenSecret);
+
+            UserModel.findOne({email: email}, async (err, user) => {
                 if (!user) {
                     return res.status(400).json({
                         "isError": true,
                         "message": "Tài khoản không tồn tại!"
                     });
                 }
-                else {
-                    if (bcrypt.compareSync(passWord, user.passWord)) {
-                        return res.status(200).json({
-                            "isError": false,
-                            "message": "Đăng nhập thành công!"
-                        });
-                    } else {
-                        return res.status(400).json({
-                            "isError": true,
-                            "message": "Mật khẩu không chính xác!"
-                        });
-                    }
 
+                if (!bcrypt.compareSync(passWord, user.passWord)) {
+                    return res.status(200).json({
+                        "isError": false,
+                        "message": "Mật khẩu không chính xác!"
+                    });
                 }
-            })
+
+                let dataForAccessToken = {
+                    email: user.email,
+                };
+                let accessToken = await authMethod.generateToken(
+                    dataForAccessToken,
+                    accessTokenSecret,
+                    accessTokenLife,
+                );
+
+                if (!accessToken) {
+                    return res.status(401).json({
+                        "isError": true,
+                        "message": "Đăng nhập không thành công, vui lòng thử lại!"
+                    });
+                }
+
+                let refreshToken = randToken.generate(jwtVariable.refreshTokenSize);
+                user.refreshToken = refreshToken;
+                user.save();
+
+                return res.json({
+                    "isError": false,
+                    "message": "Đăng nhập thành công!",
+                    "accessToken": accessToken,
+                    "refreshToken": refreshToken
+                });
+            });
         }
         catch (error) {
             return res.status(400).json({
