@@ -3,7 +3,7 @@ require('dotenv').config();
 
 exports.isAuth = async (req, res, next) => {
     // Lấy access token từ header
-    const accessTokenFromHeader = req.headers['Author'];
+    const accessTokenFromHeader = req.headers['author'];
     if (!accessTokenFromHeader) {
         return res.status(401).json({
             "isError": true,
