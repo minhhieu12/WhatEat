@@ -9,5 +9,6 @@ router
     .post('/register', HomeController.register)
     .post('/login', HomeController.login)
     .post('/getText', authController.isAuth, HomeController.getText)
+    .get('/GetPlaces', HomeController.GetPlaces)
 
 module.exports = router;

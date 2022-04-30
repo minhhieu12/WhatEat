@@ -37,6 +37,18 @@ const App = () => {
   })
   */
 
+  //New
+  useEffect((user) => {
+    if(user){
+      setLoaded(true),
+      setLoggedIn(false)
+    }
+    else{
+      setLoaded(false),
+      setLoggedIn(true)
+    }
+  })
+
   if(!loggedIn){
     return(
       <NavigationContainer>

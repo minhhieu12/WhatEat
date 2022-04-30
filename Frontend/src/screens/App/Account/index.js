@@ -67,7 +67,7 @@ function Account(props) {
     }
 
     const onLogOut = () => {
-        auth().signOut();
+        /*auth().signOut();*/
     }
 
     useEffect(() => {

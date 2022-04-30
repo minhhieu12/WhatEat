@@ -1,4 +1,5 @@
 const UserModel = require('../models/user.model');
+const PlacesModel = require('../models/places.model')
 const bcrypt = require("bcrypt");
 const authMethod = require('../config/auth.methods');
 const randToken = require('rand-token');
@@ -112,6 +113,7 @@ class HomeController  {
 
                 return res.json({
                     "isError": false,
+                    "email": email,
                     "message": "Đăng nhập thành công!",
                     "accessToken": accessToken,
                     "refreshToken": refreshToken
@@ -126,11 +128,42 @@ class HomeController  {
         }
     }
 
+
+
     static getText(req, res) {
         return res.json({
             "isError": false,
             "message": "hihi!",
         })
+    }
+
+    static GetPlaces(req, res) {
+        try {
+            var data = []
+            PlacesModel.find({}, async (err, places) => {
+                places.forEach((place) => {
+                    place.quanAn.forEach((quan) => {
+                        // console.log(quan.name)
+                        data.push({
+                            'name': quan.name,
+                            'latitude': quan.latitude,
+                            'longitude': quan.longitude
+                        });
+                        console.log('hihi', data);
+                    });
+                });
+            });
+            return res.json({
+                "isError": false,
+                "data": data
+            });
+        }
+        catch (error) {
+            return res.status(400).json({
+                "isError": true,
+                "message": error.message
+            });
+        }
     }
 }
 
