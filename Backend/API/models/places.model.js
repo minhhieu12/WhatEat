@@ -12,8 +12,8 @@ const PlacesSchemaModel = new Schema({
             address: {type: String},
             phone: {type: String},
             rate: {type: Number},
-            latitude: {type: String},
-            longitude: {type: String},
+            latitude: {type: Number},
+            longitude: {type: Number},
             image: {type: String},
             category: [],
             menu: [

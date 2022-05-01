@@ -139,24 +139,26 @@ class HomeController  {
 
     static GetPlaces(req, res) {
         try {
-            var data = []
-            PlacesModel.find({}, async (err, places) => {
+            var data = [];
+            PlacesModel.find({}, (err, places) => {
                 places.forEach((place) => {
                     place.quanAn.forEach((quan) => {
                         // console.log(quan.name)
                         data.push({
                             'name': quan.name,
                             'latitude': quan.latitude,
-                            'longitude': quan.longitude
+                            'longitude': quan.longitude,
+                            'image': quan.image,
                         });
                         console.log('hihi', data);
                     });
                 });
+                return res.json({
+                    "isError": false,
+                    "data": data
+                });
             });
-            return res.json({
-                "isError": false,
-                "data": data
-            });
+
         }
         catch (error) {
             return res.status(400).json({
