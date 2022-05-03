@@ -19,6 +19,11 @@ router
         AuthController.IsAuth,
         PostController.GetAllPosts
     )
+    .post (
+        '/LikeThePost',
+        AuthController.IsAuth,
+        PostController.LikeThePost
+    )
 
 
 module.exports = router;
