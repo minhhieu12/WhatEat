@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 
 const PostSchemaModel = new Schema({
     createdUser: Schema.Types.ObjectId,
-    createdDate: { type: Date, Default: Date.now },
+    createdDate: { type: Date, default: Date.now },
     postContent: String,
-    rate: Number,
+    rate: { type: Number, default: 0 },
     category: String,
     image: [ String ],
     comment: [
@@ -19,7 +19,7 @@ const PostSchemaModel = new Schema({
     like: [
         {
             createdUser: Schema.Types.ObjectId,
-            createdDate: { type: Date, Default: Date.now }
+            createdDate: { type: Date, default: Date.now }
         }
     ]
 });

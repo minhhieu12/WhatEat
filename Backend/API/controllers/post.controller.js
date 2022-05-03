@@ -9,8 +9,33 @@ class PostController {
         });
     }
 
-    static CreatePost = (req, res) => {
-        let createdUser
+    static CreatePost = async (req, res) => {
+        let createdUser = req.body.createdUser,
+            postContent = req.body.postContent,
+            category = req.body.category,
+            image = req.body.image;
+
+        let post = await new PostModel({
+            createdUser,
+            postContent,
+            category,
+            image
+        });
+
+        await post.save()
+            .then(doc => {
+                return res.json({
+                    'isError': false,
+                    'message': 'Đăng bài thành công!'
+                });
+            })
+            .catch(error => {
+                return res.status(400).json({
+                    'isError': true,
+                    'message': 'Đã xảy ra lỗi khi đăng bài, vui lòng kiểm tra lại!',
+                    'messageDetail': error
+                });
+            });
     }
 }
 
