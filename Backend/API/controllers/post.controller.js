@@ -56,8 +56,14 @@ class PostController {
     }
 
     static LikeThePost = async (req, res) => {
-        let postId = req.body.id,
-            likedUser = req.body.user;
+        let postId = req.body._id,
+            likedUser = req.body.createdUser;
+
+        if (!postId || !likedUser)
+            return res.status(400).json({
+                'isError': true,
+                'message': 'Params truyền vào bị thiếu, vui lòng kiểm tra lại'
+            });
 
         await PostModel.findOne({ _id: postId })
             .then(doc => {
@@ -67,6 +73,7 @@ class PostController {
                         'message': 'Không tìm thấy bài viết!'
                     });
                 }
+
                 if (!doc.like.find(e => e.createdUser == likedUser)) {
                     doc.like.addToSet({ createdUser: likedUser });
                     doc.save();
