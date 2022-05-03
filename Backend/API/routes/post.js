@@ -14,6 +14,11 @@ router
         AuthController.IsAuth,
         PostController.CreatePost
     )
+    .post (
+        '/GetAllPosts',
+        AuthController.IsAuth,
+        PostController.GetAllPosts
+    )
 
 
 module.exports = router;

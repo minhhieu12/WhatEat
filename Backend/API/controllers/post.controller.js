@@ -37,6 +37,23 @@ class PostController {
                 });
             });
     }
+
+    static GetAllPosts = async (req, res) => {
+        await PostModel.find({})
+            .then(doc => {
+                return res.json({
+                    'isError': false,
+                    'data': doc
+                })
+            })
+            .catch(error => {
+                return res.status(400).json({
+                    'isError': true,
+                    'message': 'Đã xảy ra lỗi khi lấy tất cả bài viết',
+                    'messageDetail': error
+                });
+            });
+    }
 }
 
 
