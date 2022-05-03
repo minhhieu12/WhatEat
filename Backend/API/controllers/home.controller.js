@@ -113,7 +113,7 @@ class HomeController  {
 
                 return res.json({
                     "isError": false,
-                    "email": email,
+                    "id": user._id,
                     "message": "Đăng nhập thành công!",
                     "accessToken": accessToken,
                     "refreshToken": refreshToken
@@ -139,7 +139,7 @@ class HomeController  {
 
     static GetPlaces(req, res) {
         try {
-            var data = [];
+            let data = [];
             PlacesModel.find({}, (err, places) => {
                 places.forEach((place) => {
                     place.quanAn.forEach((quan) => {

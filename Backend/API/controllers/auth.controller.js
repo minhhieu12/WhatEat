@@ -1,7 +1,7 @@
 const authMethod = require('../config/auth.methods');
 require('dotenv').config();
 
-exports.isAuth = async (req, res, next) => {
+exports.IsAuth = async (req, res, next) => {
     // Lấy access token từ header
     const accessTokenFromHeader = req.headers['author'];
     if (!accessTokenFromHeader) {
