@@ -6,7 +6,10 @@ const UserSchemaModel = new Schema({
     fullName: {type: String, default: ''},
     email: {type: String, default: ''},
     userName: {type: String, default: ''},
+    gender: {type: Number, default: 0},
+    birthday: {type: Date},
     passWord: {type: String},
+    rePassword: {type: String},
     accessToken: {type: String},
     refreshToken: {type: String}
 });

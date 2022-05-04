@@ -18,14 +18,26 @@ class HomeController  {
             let fullName = req.body.fullName,
                 email = req.body.email,
                 userName = req.body.userName,
-                passWord = req.body.passWord;
-
-            if(!fullName || !email || !passWord || !userName){
+                passWord = req.body.passWord,
+                gender = req.body.gender,
+                birthday = req.body.birthday
+                //rePassword = req.body.rePassword;
+            /*
+            if(!fullName || !email || !passWord || !userName || !gender || !birthday || !rePassword){
                 return res.status(400).json({
                     "isError": true,
                     "message": "Các trường không được trống!"
                 });
             }
+
+            if (passWord != rePassword) {
+                return res.status(400).json({
+                    "isError": true,
+                    "message": "Mật khẩu nhập lại không khớp!"
+                });
+            }
+
+             */
 
             UserModel.find({userName: userName}, (err, doc) => {
                 if (doc.length) {
@@ -40,6 +52,8 @@ class HomeController  {
                     user.email = email;
                     user.userName = userName;
                     user.passWord = user.generateHash(passWord);
+                    user.gender = gender;
+                    user.birthday = birthday;
                     user.save();
                     return res.json({
                         "isError": false,
