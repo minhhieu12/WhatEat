@@ -8,6 +8,7 @@ router
     .post('/register', HomeController.register)
     .post('/login', HomeController.login)
     .post('/getText', authController.IsAuth, HomeController.getText)
-    .get('/GetPlaces', HomeController.GetPlaces)
+    .get('/GetPlacesMap', HomeController.GetPlacesMap)
+    .get('/GetPlacesToPick', HomeController.GetPlacesToPick)
 
 module.exports = router;

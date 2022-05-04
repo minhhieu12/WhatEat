@@ -151,7 +151,7 @@ class HomeController  {
         })
     }
 
-    static GetPlaces(req, res) {
+    static GetPlacesMap(req, res) {
         try {
             let data = [];
             PlacesModel.find({}, (err, places) => {
@@ -172,9 +172,37 @@ class HomeController  {
                     "data": data
                 });
             });
-
         }
         catch (error) {
+            return res.status(400).json({
+                "isError": true,
+                "message": error.message
+            });
+        }
+    }
+
+    static GetPlacesToPick(req, res){
+        try {
+            let data = [];
+            PlacesModel.find({}, (err, places) => {
+                places.forEach((place) => {
+                    place.quanAn.forEach((quan) => {
+                        data.push({
+                            '_id': quan._id,
+                            'name': quan.name,
+                            'address': quan.address,
+                            'phone': quan.phone,
+                            'image': quan.image,
+                        });
+                        console.log('hihi', data);
+                    });
+                });
+                return res.json({
+                    "isError": false,
+                    "data": data
+                });
+            });
+        } catch (error) {
             return res.status(400).json({
                 "isError": true,
                 "message": error.message
