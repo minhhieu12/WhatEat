@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 
 const PostSchemaModel = new Schema({
-    createdUser: Schema.Types.ObjectId,
+    createdUser: {type: String},
     createdDate: { type: Date, default: Date.now },
     postContent: String,
     rate: { type: Number, default: 0 },
@@ -21,7 +21,12 @@ const PostSchemaModel = new Schema({
             createdUser: Schema.Types.ObjectId,
             createdDate: { type: Date, default: Date.now }
         }
-    ]
+    ],
+    place: {
+        placeId: {type: String},
+        placeName: {type: String},
+        placeAddress: {type: String}
+    }
 });
 
 

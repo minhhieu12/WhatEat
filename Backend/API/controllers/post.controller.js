@@ -13,13 +13,17 @@ class PostController {
         let createdUser = req.body.createdUser,
             postContent = req.body.postContent,
             category = req.body.category,
-            image = req.body.image;
+            image = req.body.image,
+            place = req.body.place,
+            rate = req.body.rate;
 
         let post = await new PostModel({
             createdUser,
             postContent,
             category,
-            image
+            image,
+            place,
+            rate,
         });
 
         await post.save()
