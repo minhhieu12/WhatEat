@@ -61,23 +61,32 @@ class PostController {
             });
     }
 
-    static GetDetailPost = async (req, res) => {
-        let id = req.body.id
-        let data = {}
-        await PostModel.find({_id: id})
-            .then(doc => {
+    static GetDetailPost = (req, res) => {
+        try{
+            let id = req.body.id
+            let data = {}
+            let place = {}
+            let countLike = {countLike: ""}
+            let countComment = {countComment: ""}
+            PostModel.findOne({_id: id}, (err, post) => {
+                countLike.countLike = post.like.length;
+                countComment.countComment = post.comment.length;
+                data = post
+                place = post.place
                 return res.json({
-                    'isError': false,
-                    'data': doc
-                })
-            })
-            .catch(error => {
-                return res.status(400).json({
-                    'isError': true,
-                    'message': 'Đã xảy ra lỗi khi lấy bài viết',
-                    'messageDetail': error
+                    "isError": false,
+                    "data": data,
+                    "place": place,
+                    "countComment": countComment,
+                    "countLike": countLike
                 });
+            })
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
             });
+        }
     }
 
     static LikeThePost = async (req, res) => {
