@@ -61,6 +61,25 @@ class PostController {
             });
     }
 
+    static GetDetailPost = async (req, res) => {
+        let id = req.body.id
+        let data = {}
+        await PostModel.find({_id: id})
+            .then(doc => {
+                return res.json({
+                    'isError': false,
+                    'data': doc
+                })
+            })
+            .catch(error => {
+                return res.status(400).json({
+                    'isError': true,
+                    'message': 'Đã xảy ra lỗi khi lấy bài viết',
+                    'messageDetail': error
+                });
+            });
+    }
+
     static LikeThePost = async (req, res) => {
         let postId = req.body._id,
             likedUser = req.body.createdUser;

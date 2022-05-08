@@ -24,6 +24,11 @@ router
         AuthController.IsAuth,
         PostController.LikeThePost
     )
+    .post (
+        '/GetDetailPost',
+        AuthController.IsAuth,
+        PostController.GetDetailPost
+    )
 
 
 module.exports = router;
