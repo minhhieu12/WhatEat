@@ -12,14 +12,14 @@ const PostSchemaModel = new Schema({
     image: [ String ],
     comment: [
         {
-            createdUser: String,
+            createdUser: Schema.Types.ObjectId,
             createdDate: { type: Date, default: Date.now },
             commentContent: String
         }
     ],
     like: [
         {
-            createdUser: String,
+            createdUser: Schema.Types.ObjectId,
             createdDate: { type: Date, default: Date.now }
         }
     ],
