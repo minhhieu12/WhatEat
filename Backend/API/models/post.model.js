@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const PostSchemaModel = new Schema({
     createdUser: {type: String},
     createdDate: { type: Date, default: Date.now },
+    postTitle: String,
     postContent: String,
     rate: { type: Number, default: 0 },
     category: String,

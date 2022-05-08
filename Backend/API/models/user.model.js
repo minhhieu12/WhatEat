@@ -11,7 +11,9 @@ const UserSchemaModel = new Schema({
     passWord: {type: String},
     rePassword: {type: String},
     accessToken: {type: String},
-    refreshToken: {type: String}
+    refreshToken: {type: String},
+    bio: {type: String},
+    image: {type: String, default: 'https://firebasestorage.googleapis.com/v0/b/whateat-83348.appspot.com/o/logo.png?alt=media&token=93a2c10a-5fb6-4bdd-9de5-724b014d9a39'}
 });
 
 UserSchemaModel.methods.generateHash= (passWord) => {

@@ -10,5 +10,8 @@ router
     .post('/getText', authController.IsAuth, HomeController.getText)
     .get('/GetPlacesMap', HomeController.GetPlacesMap)
     .get('/GetPlacesToPick', HomeController.GetPlacesToPick)
+    .post('/GetProfile', authController.IsAuth, HomeController.GetProfile)
+    .post('/searchPlacePick', authController.IsAuth, HomeController.searchPlacePick)
+    .post('/GetUserPost', authController.IsAuth, HomeController.GetUserPost)
 
 module.exports = router;

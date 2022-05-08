@@ -12,6 +12,7 @@ class PostController {
     static CreatePost = async (req, res) => {
         let createdUser = req.body.createdUser,
             postContent = req.body.postContent,
+            postTitle = req.body.postTitle,
             category = req.body.category,
             image = req.body.image,
             place = req.body.place,
@@ -20,6 +21,7 @@ class PostController {
         let post = await new PostModel({
             createdUser,
             postContent,
+            postTitle,
             category,
             image,
             place,
