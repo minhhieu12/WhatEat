@@ -25,10 +25,9 @@ router
         PostController.LikeThePost
     )
     .post (
-        '/GetDetailPost',
+        '/CommentThePost',
         AuthController.IsAuth,
-        PostController.GetDetailPost
+        PostController.CommentThePost
     )
-
 
 module.exports = router;
