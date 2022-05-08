@@ -98,6 +98,43 @@ class PostController {
                 });
             });
     }
+
+    static CommentThePost = async (req, res) => {
+        let postId = req.body._id,
+            commentUser = req.body.createdUser,
+            commentContent = req.body.content;
+
+        if (!postId || !commentUser || !commentContent)
+            return res.status(400).json({
+                'isError': true,
+                'message': 'Params truyền vào bị thiếu, vui lòng kiểm tra lại'
+            });
+
+        await PostModel.findOne({ _id: postId })
+            .then(doc => {
+                if (!doc) {
+                    return res.status(400).json({
+                        'isError': true,
+                        'message': 'Không tìm thấy bài viết!'
+                    });
+                }
+
+                doc.comment.addToSet({ createdUser: commentUser, commentContent: commentContent });
+                doc.save();
+
+                return res.status(200).json({
+                    'isError': false,
+                    'message': 'Đã bình luận bài viết thành công!'
+                });
+            })
+            .catch(error => {
+                return res.status(400).json({
+                    'isError': true,
+                    'message': 'Đã xảy ra lỗi khi bình luận bài viết, vui lòng kiểm tra lại',
+                    'messageDetail': error
+                });
+            });
+    }
 }
 
 
