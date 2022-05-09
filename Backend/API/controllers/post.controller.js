@@ -1,4 +1,5 @@
 const PostModel = require('../models/post.model')
+const UserModel = require('../models/user.model');
 
 
 class PostController {
@@ -68,17 +69,39 @@ class PostController {
             let place = {}
             let countLike = {countLike: ""}
             let countComment = {countComment: ""}
+            let comment = []
             PostModel.findOne({_id: id}, (err, post) => {
                 countLike.countLike = post.like.length;
                 countComment.countComment = post.comment.length;
                 data = post
                 place = post.place
+                var temp = {
+                    commentContent: "",
+                    date: ""
+                }
+                post.comment.forEach((cmt) => {
+                    //console.log(cmt.createdUser)
+                    temp.commentContent = cmt.commentContent
+                    temp.date = cmt.createdDate
+                    comment.push(temp)
+                    var tempU = {
+                        fullName: "",
+                        image: "",
+                    }
+                    UserModel.findOne({_id: cmt.createdUser}, (err, users) => {
+                        tempU.fullName = users.fullName
+                        tempU.image = users.image
+                        console.log(tempU)
+                        Object.assign(comment, tempU)
+                    })
+                })
                 return res.json({
                     "isError": false,
                     "data": data,
                     "place": place,
                     "countComment": countComment,
-                    "countLike": countLike
+                    "countLike": countLike,
+                    "comment": comment
                 });
             })
         } catch (e) {
