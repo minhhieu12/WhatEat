@@ -77,23 +77,19 @@ class PostController {
                 place = post.place
                 var temp = {
                     commentContent: "",
-                    date: ""
+                    date: "",
+                    fullName: "",
+                    image: "",
                 }
                 post.comment.forEach((cmt) => {
                     //console.log(cmt.createdUser)
                     temp.commentContent = cmt.commentContent
                     temp.date = cmt.createdDate
-                    comment.push(temp)
-                    var tempU = {
-                        fullName: "",
-                        image: "",
-                    }
                     UserModel.findOne({_id: cmt.createdUser}, (err, users) => {
-                        tempU.fullName = users.fullName
-                        tempU.image = users.image
-                        console.log(tempU)
-                        Object.assign(comment, tempU)
+                        temp.fullName = users.fullName
+                        temp.image = users.image
                     })
+                    comment.push(temp)
                 })
                 return res.json({
                     "isError": false,
