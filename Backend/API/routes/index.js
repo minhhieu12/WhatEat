@@ -13,5 +13,6 @@ router
     .post('/GetProfile', authController.IsAuth, HomeController.GetProfile)
     .post('/searchPlacePick', authController.IsAuth, HomeController.searchPlacePick)
     .post('/GetUserPost', authController.IsAuth, HomeController.GetUserPost)
+    .post('/GetPlaceDetail', authController.IsAuth, HomeController.GetPlaceDetail)
 
 module.exports = router;

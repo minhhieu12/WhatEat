@@ -8,6 +8,7 @@ const PlacesSchemaModel = new Schema({
     nameType: {type: String},
     quanAn: [
         {
+            _id: Schema.Types.ObjectId,
             name: {type: String},
             address: {type: String},
             phone: {type: String},

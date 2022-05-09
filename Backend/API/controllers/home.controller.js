@@ -190,6 +190,17 @@ class HomeController  {
     static GetPlacesToPick(req, res){
         try {
             let data = [];
+            let temp2 = [];
+            function random(array){
+                let i = array.length - 1;
+                for (; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    const temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+                return array;
+            }
             PlacesModel.find({}, (err, places) => {
                 places.forEach((place) => {
                     place.quanAn.forEach((quan) => {
@@ -199,13 +210,14 @@ class HomeController  {
                             'address': quan.address,
                             'phone': quan.phone,
                             'image': quan.image,
+                            'rate': quan.rate
                         });
-                        console.log('hihi', data);
+                        //console.log('hihi', data);
                     });
                 });
                 return res.json({
                     "isError": false,
-                    "data": data
+                    "data": random(data).slice(0, 10)
                 });
             });
         } catch (error) {
@@ -243,6 +255,48 @@ class HomeController  {
                 });
             });
 
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static GetPlaceDetail(req, res){
+        try{
+            let id = req.body.id
+            let data = {
+                id: '',
+                name: '',
+                address: '',
+                phone: '',
+                rate: '',
+                image: [],
+                menu: []
+            }
+            PlacesModel.find({}, (err, places) => {
+                places.forEach((place) => {
+                    place.quanAn.forEach((quan) => {
+                        if(quan._id.toString() === id){
+                            data.id = quan._id.toString(),
+                            data.name = quan.name,
+                            data.address = quan.address,
+                            data.phone = quan.phone,
+                            data.rate = quan.rate,
+                            data.image.push(quan.image)
+                            quan.menu.forEach((img) => {
+                                data.image.push(img.img)
+                            })
+                            data.menu = quan.menu
+                        }
+                    })
+                })
+                return res.json({
+                    "isError": false,
+                    "data": data,
+                });
+            })
         } catch (e) {
             return res.status(400).json({
                 "isError": true,
