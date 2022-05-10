@@ -1,6 +1,7 @@
 const UserModel = require('../models/user.model');
 const PlacesModel = require('../models/places.model')
 const PostModel = require('../models/post.model')
+const FollowModel = require('../models/follow.model');
 const bcrypt = require("bcrypt");
 const authMethod = require('../config/auth.methods');
 const randToken = require('rand-token');
@@ -232,22 +233,25 @@ class HomeController  {
     static GetProfile(req, res){
         try{
             let id = req.body.id
-            let data = {}
+            let data = {
+                profileId: '',
+                fullName: '',
+                userName: '',
+                bio: '',
+                image: '',
+                countPost: 0
+            }
             UserModel.findOne({_id: id}, (err, users) => {
-                data = {
-                    'profileId': users._id,
-                    'fullName': users.fullName,
-                    'userName': users.userName,
-                    'bio': users.bio,
-                    'image': users.image
-                }
-                let countPost = {countPost: ''}
-                PostModel.find({createUser: id}, (err, posts) => {
+                    data.profileId = users._id,
+                    data.fullName = users.fullName,
+                    data.userName = users.userName,
+                    data.bio = users.bio,
+                    data.image = users.image
+                PostModel.find({createdUser: id}, (err, posts) => {
                     var count = 0
                     posts.forEach((post) => {
                         count ++
-                        countPost.countPost = count
-                        Object.assign(data, countPost)
+                        data.countPost = count
                     });
                     return res.json({
                         "isError": false,
@@ -310,7 +314,7 @@ class HomeController  {
         try{
             let id = req.body.id
             let data = []
-            PostModel.find({createUser: id}, (err, posts) => {
+            PostModel.find({createdUser: id}, (err, posts) => {
                 posts.forEach((post) => {
                     data.push(post)
                 });
@@ -415,6 +419,60 @@ class HomeController  {
                     "dataPost": dataPosts
                 });
             });
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static GetFollowing(req, res){
+        try{
+            let id = req.body.id
+            let dataFollowing = {
+                countFollowing: 0,
+                followings: []
+            }
+            FollowModel.find({createdUser: id}, (err, followers) => {
+                var count = 0;
+                followers.forEach((follower) => {
+                    count++;
+                    dataFollowing.countFollowing = count;
+                    dataFollowing.followings.push(follower.followedUser);
+                })
+                return res.json({
+                    "isError": false,
+                    "data": dataFollowing
+                });
+            })
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static GetFollower(req, res){
+        try{
+            let id = req.body.id
+            let dataFollower = {
+                countFollower: 0,
+                followers: []
+            }
+            FollowModel.find({followedUser: id}, (err, followers) => {
+                var count = 0;
+                followers.forEach((follower) => {
+                    count++;
+                    dataFollower.countFollower = count;
+                    dataFollower.followers.push(follower.createdUser);
+                })
+                return res.json({
+                    "isError": false,
+                    "data": dataFollower
+                });
+            })
         } catch (e) {
             return res.status(400).json({
                 "isError": true,

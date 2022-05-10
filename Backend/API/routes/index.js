@@ -17,5 +17,7 @@ router
     .post('/GetUser',authController.IsAuth, HomeController.GetUser)
     .post('/SearchUser',authController.IsAuth, HomeController.SearchUser)
     .post('/SearchPost',authController.IsAuth, HomeController.SearchPost)
+    .post('/GetFollower',authController.IsAuth, HomeController.GetFollower)
+    .post('/GetFollowing',authController.IsAuth, HomeController.GetFollowing)
 
 module.exports = router;
