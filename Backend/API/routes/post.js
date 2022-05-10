@@ -15,9 +15,9 @@ router
         PostController.CreatePost
     )
     .post (
-        '/GetAllPosts',
+        '/Get10Posts',
         AuthController.IsAuth,
-        PostController.GetAllPosts
+        PostController.Get10Posts
     )
     .post (
         '/LikeThePost',
@@ -33,6 +33,11 @@ router
         '/GetDetailPost',
         AuthController.IsAuth,
         PostController.GetDetailPost
+    )
+    .post (
+        '/GetAllPost',
+        AuthController.IsAuth,
+        PostController.GetAllPost
     )
 
 module.exports = router;

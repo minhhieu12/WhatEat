@@ -45,12 +45,39 @@ class PostController {
             });
     }
 
-    static GetAllPosts = async (req, res) => {
+    static GetAllPost = async (req, res) => {
         await PostModel.find({})
             .then(doc => {
                 return res.json({
                     'isError': false,
                     'data': doc
+                })
+            })
+            .catch(error => {
+                return res.status(400).json({
+                    'isError': true,
+                    'message': 'Đã xảy ra lỗi khi lấy tất cả bài viết',
+                    'messageDetail': error
+                });
+            });
+    }
+
+    static Get10Posts = async (req, res) => {
+        function random(array){
+            let i = array.length - 1;
+            for (; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+            return array;
+        }
+        await PostModel.find({})
+            .then(doc => {
+                return res.json({
+                    'isError': false,
+                    'data': random(doc).slice(0, 10)
                 })
             })
             .catch(error => {

@@ -165,6 +165,7 @@ class HomeController  {
                     place.quanAn.forEach((quan) => {
                         // console.log(quan.name)
                         data.push({
+                            'id': quan._id,
                             'name': quan.name,
                             'latitude': quan.latitude,
                             'longitude': quan.longitude,
@@ -346,6 +347,72 @@ class HomeController  {
                 return res.json({
                     "isError": false,
                     "data": data,
+                });
+            });
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static GetUser(req, res){
+        try{
+            let data = [];
+            UserModel.find({}, (err, users) => {
+                users.forEach((user) => {
+                    data.push(user)
+                })
+                return res.json({
+                    "isError": false,
+                    "data": data,
+                });
+            })
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static SearchUser(req, res){
+        try{
+            let input = req.body.input;
+            let dataUsers = [];
+            UserModel.find({}, (err, users) => {
+                users.forEach((user) => {
+                    if (user.fullName.toLowerCase().indexOf(input.toLowerCase()) > -1 || user.userName.toLowerCase().indexOf(input.toLowerCase()) > -1) {
+                        dataUsers.push(user);
+                    }
+                })
+                return res.json({
+                    "isError": false,
+                    "dataUser": dataUsers
+                });
+            });
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static SearchPost(req, res){
+        try{
+            let input = req.body.input;
+            let dataPosts = [];
+            PostModel.find({}, (err, posts) => {
+                posts.forEach((post) => {
+                    if (post.postTitle.toLowerCase().indexOf(input.toLowerCase()) > -1) {
+                        dataPosts.push(post);
+                    }
+                })
+                return res.json({
+                    "isError": false,
+                    "dataPost": dataPosts
                 });
             });
         } catch (e) {

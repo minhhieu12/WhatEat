@@ -14,5 +14,8 @@ router
     .post('/searchPlacePick', authController.IsAuth, HomeController.searchPlacePick)
     .post('/GetUserPost', authController.IsAuth, HomeController.GetUserPost)
     .post('/GetPlaceDetail', authController.IsAuth, HomeController.GetPlaceDetail)
+    .post('/GetUser',authController.IsAuth, HomeController.GetUser)
+    .post('/SearchUser',authController.IsAuth, HomeController.SearchUser)
+    .post('/SearchPost',authController.IsAuth, HomeController.SearchPost)
 
 module.exports = router;
