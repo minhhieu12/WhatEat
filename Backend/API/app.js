@@ -11,7 +11,7 @@ const followRouter = require('./routes/follow')
 
 const mongoose = require('mongoose');
 const configDB = require('./config/database');
-mongoose.connect(configDB.url).then(r => console.log(r));
+mongoose.connect(configDB.url).then(r => {});
 mongoose.Promise = global.Promise;
 
 const app = express();
