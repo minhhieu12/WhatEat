@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const express = require('express');
+const cors = require('cors')
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -11,10 +12,12 @@ const followRouter = require('./routes/follow')
 
 const mongoose = require('mongoose');
 const configDB = require('./config/database');
-mongoose.connect(configDB.url).then(r => console.log(r));
+mongoose.connect(configDB.url).then(r => {});
 mongoose.Promise = global.Promise;
 
 const app = express();
+
+app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
