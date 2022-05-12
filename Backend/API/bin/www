@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('api:server');
 var http = require('http');
+const ChatModel = require("../models/chat.model");
 
 /**
  * Get port from environment and store in Express.
@@ -26,12 +27,38 @@ const io = require('socket.io')(server, {
     }
 });
 
-io.on('connection', client => {
+io.on('connection', async (client) => {
     console.log("a user connected");
 
-    client.on('message', (message, sid, time, rid) => {
+    client.on('getMessages', async (userId, anotherUserId) => {
+        await ChatModel.find({ sid: userId, rid: anotherUserId })
+            .then(docs => {
+                if (!docs) {
+                    return;
+                }
+
+                io.emit("listMessages", docs);
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    });
+
+    client.on('message', async (message, sid, time, rid) => {
         console.log(message, sid, time, rid);
-        io.emit("message", message, sid, time, rid);
+        let model = await new ChatModel({
+            sid: sid,
+            rid: rid,
+            message: message
+        });
+
+        await model.save()
+            .then(doc => {
+                io.emit("message", message, sid, time, rid);
+            })
+            .catch(error => {
+                console.log(error)
+            });
     });
 
     client.on('disconnect', () => {
