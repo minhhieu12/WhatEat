@@ -25,6 +25,11 @@ router
         PostController.LikeThePost
     )
     .post (
+        '/StoreThePost',
+        AuthController.IsAuth,
+        PostController.StoreThePost
+    )
+    .post (
         '/CommentThePost',
         AuthController.IsAuth,
         PostController.CommentThePost
@@ -38,6 +43,26 @@ router
         '/GetAllPost',
         AuthController.IsAuth,
         PostController.GetAllPost
+    )
+    .post (
+        '/EditPost',
+        AuthController.IsAuth,
+        PostController.EditPost
+    )
+    .post (
+        '/DeletePost',
+        AuthController.IsAuth,
+        PostController.DeletePost
+    )
+    .post (
+        '/UnlikePost',
+        AuthController.IsAuth,
+        PostController.UnlikePost
+    )
+    .post (
+        '/GetPostFollowing',
+        AuthController.IsAuth,
+        PostController.GetPostFollowing
     )
 
 module.exports = router;

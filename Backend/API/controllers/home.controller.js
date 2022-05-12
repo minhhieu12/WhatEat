@@ -149,8 +149,6 @@ class HomeController  {
         }
     }
 
-
-
     static getText(req, res) {
         return res.json({
             "isError": false,
@@ -172,7 +170,7 @@ class HomeController  {
                             'longitude': quan.longitude,
                             'image': quan.image,
                         });
-                        console.log('hihi', data);
+                        //console.log('hihi', data);
                     });
                 });
                 return res.json({
@@ -237,6 +235,7 @@ class HomeController  {
                 profileId: '',
                 fullName: '',
                 userName: '',
+                email: '',
                 bio: '',
                 image: '',
                 countPost: 0
@@ -246,7 +245,8 @@ class HomeController  {
                     data.fullName = users.fullName,
                     data.userName = users.userName,
                     data.bio = users.bio,
-                    data.image = users.image
+                    data.image = users.image,
+                    data.email = users.email
                 PostModel.find({createdUser: id}, (err, posts) => {
                     var count = 0
                     posts.forEach((post) => {
@@ -331,6 +331,31 @@ class HomeController  {
         }
     }
 
+    static GetUserStoredPost(req, res){
+        try{
+            let id = req.body.id
+            let data = []
+            PostModel.find({}, (err, posts) => {
+                posts.forEach((post) => {
+                    post.store.forEach((store) => {
+                        if(store.createdUser == id){
+                            data.push(post)
+                        }
+                    })
+                })
+                return res.json({
+                    "isError": false,
+                    "data": data,
+                });
+            });
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
     static searchPlacePick(req, res){
         try{
             let input = req.body.input;
@@ -342,7 +367,7 @@ class HomeController  {
                     // })
                     // place.quanAn.find(e => e.name.indexOf(input) > -1);
                     place.quanAn.forEach(item => {
-                        console.log(item)
+                        //console.log(item)
                         if (item.name.toLowerCase().indexOf(input.toLowerCase()) > -1) {
                             data.push(item);
                         }
@@ -472,6 +497,142 @@ class HomeController  {
                     "isError": false,
                     "data": dataFollower
                 });
+            })
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static UpdatePlacesRate(req, res){
+        try{
+            let id = req.body.id
+            var average = 0
+            PostModel.find({}, (err, posts) => {
+                var sumRate = 0;
+                var sumPost = 0;
+                posts.forEach((post) => {
+                    if(post.place.placeId == id){
+                        sumRate += post.rate
+                        sumPost++
+                    }
+                })
+                average = sumRate/sumPost
+                PlacesModel.find({}, (err, places) => {
+                    places.forEach((place) => {
+                        place.quanAn.findOne({_id: id})
+                            .then(doc => {
+                                if (!doc) {
+                                    return res.status(400).json({
+                                        'isError': true,
+                                        'message': 'Không tìm thấy bài viết!'
+                                    });
+                                } else {
+                                    doc.rate = average
+                                    doc.save()
+                                }
+                            })
+                    })
+                })
+                return res.json({
+                    "isError": false,
+                    "average": average,
+                    "message": "Cập nhật thành công"
+                });
+            })
+        } catch (e) {
+            return res.status(400).json({
+                "isError": true,
+                "message": e.message
+            });
+        }
+    }
+
+    static EditProfile = async(req, res) => {
+        let userId = req.body.id,
+            fullName = req.body.fullName,
+            username = req.body.userName,
+            email = req.body.email,
+            image = req.body.image,
+            bio = req.body.bio;
+
+        await UserModel.findOne({ _id: userId })
+            .then(doc => {
+                if (!doc) {
+                    return res.status(400).json({
+                        'isError': true,
+                        'message': 'Không tìm thấy người dùng!'
+                    });
+                } else if (!fullName || !username || !email) {
+                    return res.status(400).json({
+                        "isError": true,
+                        "message": "Họ và tên, Tên tài khoản và Email không được bỏ trống!"
+                    });
+                } else {
+                    doc.fullName = fullName
+                    doc.userName = username
+                    doc.email = email
+                    doc.image = image
+                    doc.bio = bio
+                    doc.save()
+                    return res.status(200).json({
+                        'isError': false,
+                        'message': 'Đã cập nhật tài khoản thành công!'
+                    });
+                }
+            })
+            .catch(error => {
+                return res.status(400).json({
+                    'isError': true,
+                    'message': 'Đã xảy ra lỗi khi lưu bài viết, vui lòng kiểm tra lại',
+                    'messageDetail': error
+                });
+            });
+    }
+
+    static ChangePassword(req, res){
+        try{
+            let userId = req.body.id,
+                oldPassword = req.body.oldPassword,
+                newPassword = req.body.newPassword,
+                rePassword = req.body.rePassword
+
+            UserModel.findOne({_id: userId}, (err, user) => {
+                if(!user){
+                    return res.status(400).json({
+                        "isError": true,
+                        "message": "Không tìm thấy tài khoản!"
+                    });
+                }
+
+                if(!oldPassword || !newPassword || !rePassword){
+                    return res.status(200).json({
+                        "isError": true,
+                        "message": "Tất cả các trường không được trống!"
+                    });
+                }
+
+                if (!bcrypt.compareSync(oldPassword, user.passWord)) {
+                    return res.status(200).json({
+                        "isError": true,
+                        "message": "Mật khẩu cũ không chính xác!"
+                    });
+                }
+                if(rePassword != newPassword){
+                    return res.status(200).json({
+                        "isError": true,
+                        "message": "Mật khẩu nhập lại không chính xác!"
+                    });
+                } else {
+                    user.passWord = user.generateHash(newPassword);
+                    user.save()
+                    return res.status(200).json({
+                        'isError': false,
+                        'message': 'Đã cập nhật mật khẩu thành công!'
+                    });
+                }
             })
         } catch (e) {
             return res.status(400).json({

@@ -19,5 +19,9 @@ router
     .post('/SearchPost',authController.IsAuth, HomeController.SearchPost)
     .post('/GetFollower',authController.IsAuth, HomeController.GetFollower)
     .post('/GetFollowing',authController.IsAuth, HomeController.GetFollowing)
+    .post('/GetUserStoredPost',authController.IsAuth, HomeController.GetUserStoredPost)
+    .post('/UpdatePlacesRate',authController.IsAuth, HomeController.UpdatePlacesRate)
+    .post('/EditProfile',authController.IsAuth, HomeController.EditProfile)
+    .post('/ChangePassword',authController.IsAuth, HomeController.ChangePassword)
 
 module.exports = router;

@@ -14,9 +14,9 @@ router
         AuthController.IsAuth,
         ChatController.NewMessage
     )
-    .get(
+    .post(
         '/get-messages',
-        AuthController.IsAuth,
+        //AuthController.IsAuth,
         ChatController.GetMessages
     )
 

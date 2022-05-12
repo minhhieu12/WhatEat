@@ -23,6 +23,12 @@ const PostSchemaModel = new Schema({
             createdDate: { type: Date, default: Date.now }
         }
     ],
+    store: [
+        {
+            createdUser: Schema.Types.ObjectId,
+            createdDate: { type: Date, default: Date.now }
+        }
+    ],
     place: {
         placeId: {type: String},
         placeName: {type: String},
