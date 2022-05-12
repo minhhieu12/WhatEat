@@ -9,6 +9,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const postRouter = require('./routes/post')
 const followRouter = require('./routes/follow')
+const chatRouter = require('./routes/chat')
 
 const mongoose = require('mongoose');
 const configDB = require('./config/database');
@@ -33,6 +34,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/Post', postRouter);
 app.use('/Follow', followRouter);
+app.use('/chats', chatRouter);
 
 
 // catch 404 and forward to error handler
