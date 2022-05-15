@@ -10,6 +10,8 @@ import NotiFollow from './notiFollow';
 import NotiLike from './notiLike';
 import PickPlace from './pickPlace';
 import FoodPrice from './foodPrice';
+import Welcome from './welcome';
+import User from './user';
 
 export {
     FoodRecommend, 
@@ -24,4 +26,6 @@ export {
     NotiLike,
     PickPlace,
     FoodPrice,
+    Welcome,
+    User
 };

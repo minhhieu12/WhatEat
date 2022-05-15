@@ -10,7 +10,7 @@ import Feather from 'react-native-vector-icons/Feather';
 
 function PostFollowing({title, image, avatar, time, place, author, content, numLike, numComment, onPress}){
     return(
-        <View>
+        <View >
             <View style={styles.container}> 
                 <View style={{flexDirection: 'row', marginHorizontal: 15}}>
                     <Image style={styles.ava} source={avatar}/>
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         borderRadius: 8,
-        marginTop: 15,
+        marginTop: 10,
         height: 344,
         flexDirection: 'column',
     },

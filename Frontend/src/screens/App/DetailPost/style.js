@@ -17,6 +17,13 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    titlePost: {
+      textAlign: 'left',
+      marginHorizontal: 20,
+      fontWeight: 'bold',
+      marginTop: 10,
+      fontSize: 18
+    },
     ava: {
       width: 33,
       height: 33,
@@ -108,8 +115,8 @@ export const styles = StyleSheet.create({
       width: 350
     },
     image: {
-      width: 250,
-      height: 250,
+      width: 200,
+      height: 200,
       borderRadius: 8,
       marginHorizontal: 5
     },

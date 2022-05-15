@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
       flexDirection: 'column',
       backgroundColor: '#F2F2F2',
       marginTop: 10,
-      paddingBottom: 80
+      paddingBottom: 100
     },
     container2: {
       flexDirection: 'row',
@@ -17,7 +17,8 @@ export const styles = StyleSheet.create({
         color: '#00B060',
         fontSize: 16,
         fontWeight: 'bold',
-        marginLeft: 10
+        marginLeft: 10,
+        textAlign: 'center'
     },
     text: {
         fontWeight: 'bold',

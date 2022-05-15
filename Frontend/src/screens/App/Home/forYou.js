@@ -1,100 +1,167 @@
-import React from 'react'
-import {Text, View} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import {Text, View, Alert, FlatList} from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
 import {styles} from './style'
 import {FoodRecommend} from '../../../components/index'
 import {PlaceRecommend} from '../../../components/index';
 import {PostForYou} from '../../../components/index';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { localhost } from '../../../localhost';
 
-function ForYou({navigation}) {
+function ForYou() {  
+    const navigation = useNavigation();
+
+    const [token, setToken] = useState(null);
+    const [idUser, setIdUser] = useState(null);
+    const [places, setplaces] = useState([]);
+    const [posts, setPosts] = useState([]);
+    const [users, setUsers] = useState([]);
+
+    const getUserAndToken = async () => {
+        setToken(await AsyncStorage.getItem('_token'))
+        setIdUser(await AsyncStorage.getItem('_userId'))
+    }
+
+    const random = (array) => {
+        let i = array.length - 1;
+        for (; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
+    }
+
+    const getPlaces = () => {
+        fetch(`http://${localhost}/GetPlacesToPick`)
+        .then((response) => response.json())
+        .then((json) => {
+            if(!json.isError){
+                setplaces(json.data)
+            } else {
+                Alert.alert('Thất bại!', 'Không thể lấy địa điểm')
+            }
+        })
+        .catch((err) => {
+            Alert.alert('Thất bại!', 'Có lỗi xảy ra!');
+            console.log(err);
+        })
+    }
+
+    const getPosts = () => {
+        fetch(`http://${localhost}/Post/Get10Posts`, {
+            method: 'POST',
+            headers: {
+                'author': token,
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            if(!json.isError){
+                setPosts(json.data)
+            } else {
+                Alert.alert('Thất bại!', 'Không thể lấy bài viết')
+            }
+        })
+        .catch((err) => {
+            Alert.alert('Thất bại!', 'Có lỗi xảy ra!');
+            console.log(err);
+        })
+    }
+
+    const getUsers = () => {
+        fetch(`http://${localhost}/GetUser`, {
+            method: 'POST',
+            headers: {
+                'author': token,
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            if(!json.isError){
+                setUsers(json.data)
+            } else {
+                Alert.alert('Thất bại!', 'Không thể lấy bài viết')
+            }
+        })
+        .catch((err) => {
+            Alert.alert('Thất bại!', 'Có lỗi xảy ra!');
+            console.log(err);
+        })
+    }
+
+    useEffect(async () => {
+        await getUserAndToken()
+        await getPlaces()
+        if(token != null){
+            getPosts()
+            getUsers()
+        }
+        if(places.length > 0){
+            const dataInterval = setInterval(() => getPlaces(), 300000);
+            return () => clearInterval(dataInterval);
+        }
+    }, [idUser])
+    console.log(places)
+
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.title}>Hôm nay ăn gì?</Text>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.foodContainer}>
-                <FoodRecommend 
-                    title="Phở"
-                    image={require('../../../assets/img/pho.png')}
-                    onPress={() => navigation.navigate('Food')}
-                />
-                <FoodRecommend 
-                    title="Bún Bò"
-                    image={require('../../../assets/img/bunbo.png')}
-                    onPress={() => navigation.navigate('Food')}
-                />
-                <FoodRecommend 
-                    title="Bánh Mì"
-                    image={require('../../../assets/img/banhmi.png')}
-                />
-                <FoodRecommend 
-                    title="Cơm Tấm"
-                    image={require('../../../assets/img/comtam.png')}
-                />
-                <FoodRecommend 
-                    title="Gà Rán"
-                    image={require('../../../assets/img/garan.png')}
-                />
-                <FoodRecommend 
-                    title="Trà Sữa"
-                    image={require('../../../assets/img/trasua.png')}
-                />
-            </ScrollView>
-            <Text style={styles.title}>Địa điểm nổi bật</Text>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.placeContainer}>
-                <PlaceRecommend 
-                    title="Chicken Plus"
-                    rate='4.5'
-                    image={require('../../../assets/img/place.png')}
-                    onPress={() => navigation.navigate('PlaceScreen')}
-                />
-                <PlaceRecommend 
-                    title="Trà sữa Đậu"
-                    rate='4.5'
-                    image={require('../../../assets/img/place.png')}
-                />
-                <PlaceRecommend 
-                    title="Mì cay Seoul"
-                    rate='4.5'
-                    image={require('../../../assets/img/place.png')}
-                />
-                <PlaceRecommend 
-                    title="Nem nướng Nhã Phương"
-                    rate='4.5'
-                    image={require('../../../assets/img/place.png')}
-                />
-            </ScrollView>
-            <PostForYou
-                title='Gà rán Chicken Plus'
-                image={require('../../../assets/img/sample.png')}
-                place='356 đường 30/4, phường Chánh Nghĩa, thành phố Thủ Dầu Một, Bình Dương'
-                author='Minh Hiếu'
-                numLike='10'
-                numComment='10'
-                onPress={() => navigation.navigate('DetailPost')}
-            />
-            <PostForYou
-                title='Cơm Tấm 68'
-                image={require('../../../assets/img/sample2.png')}
-                place='309 Thích Quảng Đức, P. Phú Cường, Thị xã Thủ Dầu Một, Bình Dương'
-                author='Phước Trung'
-                numLike='15'
-                numComment='10'
-            />
-            <PostForYou
-                title='Bánh Tráng Trộn Gánh Hàng Rong'
-                image={require('../../../assets/img/sample3.png')}
-                place='113/108B Đường 30 Tháng 4, P. Phú Hòa, Thị xã Thủ Dầu Một, Bình Dương'
-                author='Minh Hiếu'
-                numLike='10'
-                numComment='10'
-            />
-            <PostForYou
-                title='Phúc Long Nguyễn Đình Chiểu Bình Dương'
-                image={require('../../../assets/img/sample4.png')}
-                place='44 Nguyễn Đình Chiểu, P. Phú Cường, Thị xã Thủ Dầu Một, Bình Dương'
-                author='Minh Hiếu'
-                numLike='10'
-                numComment='10'
-            />
+            <View>
+                <Text style={styles.title}>Địa điểm nổi bật</Text>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                    {
+                        places.map((item, index) => {
+                            return(
+                                <PlaceRecommend 
+                                    key={index}
+                                    title={item.name}
+                                    rate={item.rate}
+                                    image={{uri: item.image}}
+                                    onPress={() => navigation.navigate({name: 'PlaceScreen',  params: {idPlace: item._id}})}
+                                />
+                            )
+                        })
+                    }
+                </ScrollView>
+            </View>
+            <Text style={styles.title}>Bài viết dành cho bạn</Text>
+            <View>
+                {
+                    posts.map((item, index) => {
+                        var userName;
+                        var countLike = item.like.length.toString();
+                        var countComment = item.comment.length.toString();
+                        {
+                            for(let i=0; i<users.length; i++){
+                                if(users[i]._id == item.createdUser){
+                                    userName = users[i].fullName
+                                }
+                            }
+                        }
+                        return(
+                            <PostForYou
+                                key={index}
+                                title={item.postTitle}
+                                image={{uri: item.image[0]}}
+                                place={item.place.placeName}
+                                author={userName}
+                                numLike={countLike}
+                                numComment={countComment}
+                                onPress={() => navigation.navigate({name: 'DetailPost', params: {
+                                    idPost: item._id,
+                                    idUser: item.createdUser
+                                }})}
+                            />
+                        )
+                    })
+                }
+            </View>
         </ScrollView>
     );
 };

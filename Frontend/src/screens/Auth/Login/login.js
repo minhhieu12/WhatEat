@@ -1,10 +1,19 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState, useEffect, NativeModules } from 'react'
 import {Text, View, Image, TextInput, TouchableOpacity} from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { styles } from '../Login/style';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { NavigationContainer } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
-//import auth from '@react-native-firebase/auth';
+import { Alert } from 'react-native';
+import RNRestart from 'react-native-restart';
+import {useValidation} from 'react-native-form-validator';
+import customValidationMessages from '../../../validate/customValidationMessages';
+
+import logIn from '../../../api/login';
+import global from '../../../global';
+import saveToken from '../../../api/saveToken';
+import { localhost } from '../../../localhost';
 
 function Login() {
     const navigation = useNavigation();
@@ -12,39 +21,65 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const onSignIn = () => {
-        fetch('http://192.168.1.253:3000/login', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: email,
-                passWord: password
-            })
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            if(!json.isError){
-                alert('Đăng nhập thành công!')
-            } else {
-                alert('Đăng nhập thất bại!')
-            }
-        })
-        .catch((error) => {
-            alert(error);
-        })
-        /*
-        auth()
-        .signInWithEmailAndPassword(email, password)
-        .then((result) => {
-            console.log(result);
-        })
-        .catch((error) => {
+    const [token, setToken] = useState();
+
+    useEffect(() => {
+        
+    })
+
+    const saveUserId = async (userId) => {
+        try {
+            await AsyncStorage.setItem('_userId', userId);
+        } catch (error) {
+            console.log('Loi khi luu user id');
             console.log(error);
+        }
+    }
+
+    const {validate, isFieldInError, getErrorsInField, getErrorMessages} =
+    useValidation({
+      state: {
+        email,
+        password
+      },
+      messages: customValidationMessages,
+    });
+
+    const onSignIn = () => {
+        const isOk = validate({
+            email: {require: true, email: true},
+            password: {require: true}
         });
-        */
+        if (isOk) {
+            fetch(`http://${localhost}/login`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    passWord: password
+                })
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                if(!json.isError){
+                    saveToken(json.accessToken)
+                    saveUserId(json.id)
+                    //Alert.alert('Đăng nhập thành công!')
+                    RNRestart.Restart()
+                    console.log("user id: " + json.id)
+                    console.log("token: " + json.accessToken)
+                } else {
+                    Alert.alert('Đăng nhập thất bại!', 'Email hoặc mật khẩu không chính xác')
+                }
+            })
+            .catch((err) => {
+                Alert.alert('Đăng nhập thất bại!', 'Có lỗi xảy ra, vui lòng thử lại!');
+                console.log(err);
+            })
+        }
     }
 
     const [hidePass, setHidePass] = useState(true);
@@ -66,8 +101,12 @@ function Login() {
                     <TextInput
                         placeholder="Email"
                         onChangeText={email => setEmail(email)}
+                        style={{width: 275}}
                     />
                 </View>
+                {isFieldInError('email') && getErrorsInField('email').map(errorMessage => (
+                    <Text style={styles.errMessage}>{errorMessage}</Text>
+                ))}
                 
 
                 <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
@@ -86,6 +125,9 @@ function Login() {
                         onPress={() => setHidePass(!hidePass)}
                     />
                 </View>
+                {isFieldInError('password') && getErrorsInField('password').map(errorMessage => (
+                    <Text style={styles.errMessage}>{errorMessage}</Text>
+                ))}
                 
                 
 

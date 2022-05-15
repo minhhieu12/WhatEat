@@ -9,7 +9,7 @@ const defaultMessages = {
     date: 'Trường này phải là ngày hợp lệ ({1}).',
     minlength: 'Trường này phải nhiều hơn {1} ký tự.',
     maxlength: 'Trường này không được vượt quá {1} ký tự.',
-    equalPassword: 'Mật khẩu không trùng khớp.',
+    equalPassword: 'Mật khẩu nhập lại không trùng khớp.',
     hasUpperCase: 'Trường này phải chứa ký tự in hoa.',
     hasLowerCase: 'Trường này phải chứa ký tự thường.',
     hasNumber: 'Trường này phải chứa ký tự số.',

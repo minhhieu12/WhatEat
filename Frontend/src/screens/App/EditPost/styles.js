@@ -17,6 +17,8 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginTop: 10,
+        width: 290,
+        marginLeft: 10
     },
     ava: {
       width: 33,
@@ -123,14 +125,5 @@ export const styles = StyleSheet.create({
       height: 150,
       borderRadius: 8,
       marginHorizontal: 5
-    },
-    containImage: {
-      marginHorizontal: 10,
-      flexDirection: 'row',
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: 'lightgrey',
-      borderRadius: 8,
-      paddingHorizontal: 10,
     }
 });

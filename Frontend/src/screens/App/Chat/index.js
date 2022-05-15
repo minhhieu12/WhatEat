@@ -1,11 +1,65 @@
-import React from 'react'
-import {Text, View, Image, StyleSheet, TextInput} from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import {Text, View, Image, StyleSheet, TextInput, Alert} from 'react-native'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import Feather from 'react-native-vector-icons/Feather';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import io from 'socket.io-client';
+import moment from 'moment';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { localhost } from '../../../localhost';
 
 function Chat() {
     const navigation = useNavigation();
+
+    const route = useRoute();
+
+    var value = {}
+    value = route.params;
+    //console.log(value)
+
+    const [token, setToken] = useState(null);
+    const [idUser, setIdUser] = useState(null);
+    const getUserAndToken = async () => {
+        setToken(await AsyncStorage.getItem('_token'))
+        setIdUser(await AsyncStorage.getItem('_userId'))
+    }
+
+    const [chatvjp, setChat] = useState({message: '', sid: '', time: '', rid: ''});
+    const [messages, setMessages] = useState([])
+
+    const socketRef = useRef()
+
+    useEffect(() => {
+        socketRef.current = io('http://192.168.1.253:3000')
+        socketRef.current.on('message', ({sid, message, time, rid}) => {
+            console.log('message: ', message, 'sid: ', sid, 'time: ', time, 'rid: ', rid)
+            setMessages([...messages, {message, sid, time, rid}]);
+        });
+
+        socketRef.current.on('getMessages', (data) => {
+            setMessages(data);
+        });
+
+        return() => {
+            socketRef.current.disconnect();
+        };
+    }, [messages])
+
+    useEffect(async () => {
+        await getUserAndToken()
+        if (token != null) {
+            socketRef.current.emit('getMessages', {
+                userId: idUser,
+                anotherUserId: value.idFriend
+            });
+        }
+    }, [idUser])
+
+    const onSubmitHandler = () => {
+        const {message, sid, time, rid} = chatvjp;
+        socketRef.current.emit('message', {message, sid, time, rid});
+        setChat({message: '', sid: '', time: '', rid: ''});
+    }
 
     return (
         <View> 
@@ -17,220 +71,67 @@ function Chat() {
                     <Feather name="chevron-left" style={{fontSize: 32}}/>                    
                 </TouchableOpacity>          
                 <View style={styles.container2}>                               
-                    <Image source={require('../../../assets/img/ava2.png')} style={{width: 40, height: 40, borderRadius: 20}}/>
-                    <View style={{marginLeft: 10}}>
-                        <Text style={{fontWeight: 'bold'}}>Phước Trung</Text>
-                        <Text style={{fontStyle: 'italic'}}>Đang hoạt động</Text>
+                    <Image source={{uri: value.imageFriend}} style={{width: 40, height: 40, borderRadius: 20}}/>
+                    <View style={{marginLeft: 10, marginTop: 8}}>
+                        <Text style={{fontWeight: 'bold'}}>{value.nameFriend}</Text>
                     </View>
                 </View>
             </View>
-            <View style={{paddingBottom: 200, marginTop: 20, marginHorizontal: 10}}>
+            <View style={{paddingBottom: 200, marginTop: 20, marginHorizontal: 15}}>
                 <ScrollView>                          
-                    <View style={{alignItems: 'flex-end', marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 100, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white'}}>
-                            Hi Trung
-                        </Text>
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',
-                                marginTop: 2}}>
-                            Sorry to bother you. I have a question for you
-                        </Text>
-                    </View>
-                    <View style={{marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 120, 
-                                textAlign: 'left',
-                                paddingHorizontal: 10,
-                                backgroundColor: 'lightgrey'}}>
-                            OK, what’s up?
-                        </Text>
-                    </View>
-                    <View style={{alignItems: 'flex-end', marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',}}>
-                            I’ve been having a problem with my computer.
-                        </Text>
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',
-                                marginTop: 2}}>
-                            I know you’re an engineer so I thought you might be able to help me.
-                        </Text>
-                    </View>
-                    <View style={{marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 200, 
-                                textAlign: 'left',
-                                paddingHorizontal: 10,
-                                backgroundColor: 'lightgrey'}}>
-                            I see. What’s the problem?
-                        </Text>
-                    </View>
-                    <View style={{alignItems: 'flex-end', marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',}}>
-                            I have a file that I can’t open for some reason.
-                        </Text>
-                    </View>
-                    <View style={{marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 170, 
-                                textAlign: 'left',
-                                paddingHorizontal: 10,
-                                backgroundColor: 'lightgrey'}}>
-                            What type of file is it?
-                        </Text>
-                    </View>
-                    <View style={{alignItems: 'flex-end', marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',}}>
-                           It’s a Word document I’ve been working on
-                        </Text>
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',
-                                marginTop: 2}}>
-                            I need to finish it by tomorrow
-                        </Text>
-                    </View>
-                    <View style={{marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'left',
-                                paddingHorizontal: 10,
-                                backgroundColor: 'lightgrey'}}>
-                            Were you able to open it before, on the computer you’re using now?
-                        </Text>
-                    </View>
-                    <View style={{alignItems: 'flex-end', marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',}}>
-                           Yes, I was working on it last night and everything was fine
-                        </Text>
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',
-                                marginTop: 2}}>
-                            but this morning I couldn’t open the file.
-                        </Text>
-                    </View>
-                    <View style={{marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'left',
-                                paddingHorizontal: 10,
-                                backgroundColor: 'lightgrey'}}>
-                            Do you think your computer might have a virus?
-                        </Text>
-                    </View>
-                    <View style={{alignItems: 'flex-end', marginTop: 5}}>  
-                        <Text 
-                            style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 230, 
-                                textAlign: 'right',
-                                paddingHorizontal: 10,
-                                backgroundColor: '#00b060',
-                                color: 'white',}}>
-                            No, I checked and there weren’t any.
-                        </Text>
-                    </View>
-                    <View style={{marginTop: 5}}>  
-                        <View style={{ 
-                                paddingVertical: 10, 
-                                borderRadius: 8, 
-                                width: 40, 
-                                textAlign: 'left',
-                                paddingHorizontal: 10,
-                                backgroundColor: 'lightgrey'}}>
-                            <Feather name='more-horizontal'/>
-                        </View>
-                    </View>
+                    {
+                        messages.map((item, index) => {
+                            if (item.sid == idUser) {
+                                return(        
+                                    <View style={{marginTop: 5, alignItems: 'flex-end'}}>
+                                        <Text 
+                                            key={index}
+                                            style={{ 
+                                                paddingVertical: 10, 
+                                                borderRadius: 8, 
+                                                textAlign: 'right',
+                                                paddingHorizontal: 10,
+                                                backgroundColor: '#00b060',
+                                                color: 'white'}}>
+                                            {item.message}
+                                        </Text>
+                                    </View>                          
+                                )
+                            } else {
+                                return(
+                                    <View style={{marginTop: 5, alignItems: 'flex-start'}}>  
+                                        <Text 
+                                            key={index}
+                                            style={{ 
+                                                paddingVertical: 10, 
+                                                borderRadius: 8,
+                                                textAlign: 'left',
+                                                paddingHorizontal: 10,
+                                                backgroundColor: 'lightgrey'}}>
+                                            {item.message}
+                                        </Text>
+                                    </View>
+                                )
+                            }
+                        })
+                    }            
+                    <View style={{height: 470}}></View>  
                 </ScrollView>
             </View>
             <View style={styles.bottonTab}>
                 <TextInput
                     placeholder='Nhập tin nhắn của bạn'
                     style={styles.textInput}
+                    onChangeText={text => {
+                        var stateCopy = Object.assign({}, chatvjp);
+                        stateCopy.message = text;
+                        stateCopy.sid = idUser;
+                        stateCopy.rid = value.idFriend
+                        setChat(stateCopy);                        
+                    }}
+                    value={chatvjp.message}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={onSubmitHandler}>
                     <Feather name='send' style={{fontSize: 32, marginLeft: 10}}/>
                 </TouchableOpacity>
             </View>
@@ -244,7 +145,7 @@ const styles = StyleSheet.create({
     bottonTab: {
         flexDirection: 'row',
       backgroundColor: 'white',
-      width: 370,
+      width: 380,
       height: 70,
       justifyContent: 'center',
       alignItems: 'center',

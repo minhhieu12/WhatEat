@@ -30,31 +30,31 @@ const io = require('socket.io')(server, {
 io.on('connection', async (client) => {
     console.log("a user connected");
 
-    client.on('getMessages', async (userId, anotherUserId) => {
-        await ChatModel.find({ sid: userId, rid: anotherUserId })
+    client.on('getMessages', async (data) => {
+        await ChatModel.find({ sid: data.userId, rid: data.anotherUserId })
             .then(docs => {
                 if (!docs) {
                     return;
                 }
 
-                io.emit("listMessages", docs);
+                io.emit("getMessages", docs);
             })
             .catch(error => {
-                console.log(error)
+                console.error(error)
             });
     });
 
-    client.on('message', async (message, sid, time, rid) => {
-        console.log(message, sid, time, rid);
+    client.on('message', async (data) => {
+        // console.log(message, sid, time, rid);
         let model = await new ChatModel({
-            sid: sid,
-            rid: rid,
-            message: message
+            sid: data.sid,
+            rid: data.rid,
+            message: data.message
         });
 
         await model.save()
             .then(doc => {
-                io.emit("message", message, sid, time, rid);
+                io.emit("message", data);
             })
             .catch(error => {
                 console.log(error)

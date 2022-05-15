@@ -25,8 +25,8 @@ export const styles = StyleSheet.create({
         marginVertical: 5
     },
     image: {
-      width: 250,
-      height: 250,
+      width: 200,
+      height: 200,
       borderRadius: 8,
       alignSelf: 'center',
       marginLeft: 10,

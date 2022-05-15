@@ -36,9 +36,8 @@ const styles = StyleSheet.create({
     rectangle: {
         backgroundColor: '#fff',
         width: 160,
-        height: 130,
+        height: 135,
         borderRadius: 8,
-        marginTop: 20,
         alignItems: 'center',
         shadowColor: "#000",
         shadowOffset: {
@@ -53,7 +52,7 @@ const styles = StyleSheet.create({
     text: {
         color: '#00b060',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 14,
         marginTop: 4
     },
     rate: {
@@ -67,10 +66,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     image: {
-        width: 110,
-        height: 90,
+        width: 160,
+        height: 80,
         borderColor: '#000',
         borderRadius: 8,
-        marginTop: -19,
+        marginTop: 0,
     }
 });

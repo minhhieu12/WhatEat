@@ -19,6 +19,8 @@ import EditProfile from './App/EditProfile'
 import Friend from './App/Friend'
 import Chat from './App/Chat'
 import SearchResult from './App/SearchResult'
+import EditPost from './App/EditPost'
+import ChangePassword from './App/ChangePassword'
 
 export {
     Login, 
@@ -42,4 +44,6 @@ export {
     Friend,
     Chat,
     SearchResult,
+    EditPost,
+    ChangePassword
 };

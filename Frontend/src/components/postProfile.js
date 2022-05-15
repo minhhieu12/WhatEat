@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 8,
         flexDirection: 'column',
-        marginHorizontal: 2,
+        marginHorizontal: 1,
         marginVertical: 2,
     },
     image: {

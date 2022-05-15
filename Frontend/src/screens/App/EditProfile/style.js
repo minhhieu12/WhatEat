@@ -8,6 +8,8 @@ export const styles = StyleSheet.create({
     },
     container1: {
         flexDirection: 'row',
+        justifyContent: 'center',
+        alignContent: 'center',
         marginVertical: 20
     },
     container2: {
@@ -17,8 +19,9 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         color: '#00b060',
         fontWeight: 'bold',
-        marginHorizontal: 80,
         marginTop: 4,
+        marginLeft: 70,
+        marginRight: 90
     },
     image: {
         width: 81,
@@ -44,7 +47,29 @@ export const styles = StyleSheet.create({
         marginTop: 8,
     },
     textInput: {
-        width: 330,
-        marginLeft: 10
+        borderWidth: 0.5, 
+        borderRadius: 8,
+        flexDirection: 'row',
+        width: 353,
+        marginLeft: -10
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        borderRadius: 8,
+        borderWidth: 0.5,
+        width: 353,
+        alignItems: 'center',
+        paddingLeft: 5,
+        marginLeft: -10
+    },
+    buttonGreen: {
+        backgroundColor: '#00B060',
+        width: 353,
+        height: 50,
+        alignItems: 'center',
+        paddingTop: 15,
+        marginLeft: -10,
+        borderRadius: 8,
+        marginTop: 20
     },
 });

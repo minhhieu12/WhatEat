@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {Text, View, Image, TextInput, TouchableOpacity, Picker, FlatList, Alert} from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
 import Feather from 'react-native-vector-icons/Feather';
-import {styles} from '../Add/style'
+import {styles} from './styles'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import { RNCamera } from 'react-native-camera';
@@ -14,7 +14,7 @@ import storage, { firebase } from '@react-native-firebase/storage';
 import { localhost } from '../../../localhost'
 import * as Progress from 'react-native-progress';
 
-function Add() {
+function EditPost() {
     const navigation = useNavigation();
     const route = useRoute();
 
@@ -28,47 +28,52 @@ function Add() {
     const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
     const [rating, setRating] = useState(5);
-    const [user, setUser] = useState({});
+    const [detail, setDetail] = useState({})
+    const [user, setUser] = useState({})
 
     let imageDownload = []
     let places = {}
-
-    const getUserAndToken = async () => {
-        setToken(await AsyncStorage.getItem('_token'))
-        setUserId(await AsyncStorage.getItem('_userId'))
+    
+    const getData = () => {
+        fetch(`http://${localhost}/Post/GetDetailPost`, {
+                method: 'POST',
+                headers: {
+                    'author': token,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: value.idPost
+                })
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                if(!json.isError){
+                    setDetail(json.data)
+                    places = json.place
+                } else {
+                    Alert.alert('Thất bại!', 'Không thể lấy bài viết')
+                }
+            })
+            .catch((err) => {
+                Alert.alert('Thất bại!', 'Có lỗi xảy ra!');
+                console.log(err);
+            })
     }
 
     useEffect(async () => {
-        await getUserAndToken()
-        if(userId != null){
-            await getUser()
+        setUserId(await AsyncStorage.getItem('_userId'));
+        setToken(await AsyncStorage.getItem('_token'));
+        if(userId != null && token != null){
+            getData()
+        }
+        if(value != null){
+            setTitle(value.postTitle)
+            setContent(value.postContent)
+            setRating(value.rate)
+            setImage(image)
         }
     }, [userId])
-    const getUser = () => {
-        fetch(`http://${localhost}/GetProfile`, {
-            method: 'POST',
-            headers: {
-                'author': token,
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: userId
-            })
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            if(!json.isError){
-                setUser(json.data)
-            } else {
-                Alert.alert('Thất bại!', 'Không thể lấy thông tin')
-            }
-        })
-        .catch((err) => {
-            Alert.alert('Thất bại!', 'Có lỗi xảy ra!');
-            console.log(err);
-        })
-    }
 
     const [isModalVisible, setModalVisible] = useState(false);
 
@@ -87,7 +92,8 @@ function Add() {
         place: places,
         rate: rating
     }
-    const uploadPost = () => {
+
+    const editPost = () => {
         if(value != null){
             places = {
                 placeId: value.idPlace,
@@ -95,41 +101,67 @@ function Add() {
                 placeAddress: value.addressPlace
             }
         }
-        console.log(object)
-        fetch(`http://${localhost}/Post/CreatePost`, {
-            method: 'POST',
-            headers: {
-                'author': token,
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                createdUser: userId,
-                postContent: content,
-                postTitle: title,
-                image: imageDownload,
-                place: places,
-                rate: rating
+        if(imageDownload.length == 0){
+            fetch(`http://${localhost}/Post/EditPost`, {
+                method: 'POST',
+                headers: {
+                    'author': token,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: value.idPost,
+                    postContent: content,
+                    postTitle: title,
+                    image: value.image,
+                    place: places,
+                    rate: rating
+                })
             })
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            if(!json.isError){
-                Alert.alert('Thành công', 'Đăng bài viết thành công')
-                imageDownload = []
-                setTitle('')
-                setContent('')
-                setRating(5)
-                setImage([])
-                navigation.navigate('Home')
-            } else {
-                Alert.alert('Không thành công', json.message)
-            }
-        })
-        .catch((err) => {
-            Alert.alert('Lỗi', 'Có lỗi xảy ra');
-            console.log(err);
-        })
+            .then((response) => response.json())
+            .then((json) => {
+                if(!json.isError){
+                    Alert.alert('Thành công', 'Chỉnh sửa bài viết thành công')
+                    navigation.navigate('Account')
+                } else {
+                    Alert.alert('Không thành công', json.message)
+                }
+            })
+            .catch((err) => {
+                Alert.alert('Lỗi', 'Có lỗi xảy ra');
+                console.log(err);
+            })
+        } else {
+            fetch(`http://${localhost}/Post/EditPost`, {
+                method: 'POST',
+                headers: {
+                    'author': token,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: value.idPost,
+                    postContent: content,
+                    postTitle: title,
+                    image: imageDownload,
+                    place: places,
+                    rate: rating
+                })
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                if(!json.isError){
+                    Alert.alert('Thành công', 'Chỉnh sửa bài viết thành công')
+                    navigation.navigate('Account')
+                } else {
+                    Alert.alert('Không thành công', json.message)
+                }
+            })
+            .catch((err) => {
+                Alert.alert('Lỗi', 'Có lỗi xảy ra');
+                console.log(err);
+            })
+        }
     }
 
     const imagePick = async () => {
@@ -149,8 +181,6 @@ function Add() {
             })
             setImage(imageList);
         }).catch(e => console.log('Error: ', e.message))
-
-        
     }
 
     const makeid = (length) => {
@@ -199,7 +229,6 @@ function Add() {
             })
         }
     })
-
     const uploadImage = async () => {
         
     }
@@ -212,25 +241,30 @@ function Add() {
     return (
         <View>                          
             <View>        
-                <View style={styles.container2}>                               
-                    <Text style={styles.title}>Bài viết mới</Text>
+                <View style={styles.container2}>   
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={{marginTop: 10, marginLeft: -40}}>
+                        <Feather name="chevron-left" size={32}/>
+                    </TouchableOpacity>                            
+                    <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>Chỉnh sửa: {title}</Text>
                 </View>
             </View>            
             <View>
-                <ScrollView style={{}}>
+                <ScrollView style={{height: 678}}>
                     <View style={{flexDirection: 'row', marginHorizontal: 20, marginVertical: 20, alignItems: 'center'}}>
-                        <Image source={{uri: user.image}} style={styles.ava}/>
+                        <Image source={{uri: value.userImage}} style={styles.ava}/>
                         <View style={{flexDirection: 'column', marginLeft: 4, marginTop: -6}}>
-                            <Text style={styles.author}>{user.fullName}</Text>
+                            <Text style={styles.author}>{value.userName}</Text>
                         </View>                      
                     </View>
                     <View style={{paddingBottom: 100, flexDirection: 'column'}}>
                         <TextInput
-                            style={styles.titlePost} 
+                            value={title}
+                            style={styles.titlePost}
                             placeholder="Tiêu đề bài viết"
                             onChangeText={title => setTitle(title)}
                         />
                         <TextInput
+                            value={content}
                             style={styles.content}
                             multiline
                             numberOfLines={5}
@@ -267,23 +301,37 @@ function Add() {
                                     fractions={1}
                                     tintColor='#f2f2f2'
                                     imageSize={32}
-                                    startingValue={5}
+                                    startingValue={rating}
                                 />
                             </View>                                
                         </View>
-                        <View>
-                            <FlatList
-                                style={{marginTop: 10, marginHorizontal: 10}}
-                                numColumns={1}
-                                horizontal={true}
-                                data={image}
-                                renderItem={({item}) => (
-                                    <Image source={{uri: item.path}} style={styles.image}/>
-                                )}
-                            />
+                        <View style={{marginTop: 10, marginHorizontal: 10}}>
+                            {
+                                image.length == 0
+                                ?
+                                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                                    {
+                                        value.image.map((item, index) => {
+                                            return(
+                                                <Image key={index} source={{uri: item}} style={styles.image}/>
+                                            )
+                                        })
+                                    }
+                                </ScrollView>
+                                :
+                                <FlatList
+                                    style={{marginTop: 5}}
+                                    numColumns={1}
+                                    horizontal={true}
+                                    data={image}
+                                    renderItem={({item}) => (
+                                        <Image source={{uri: item.path}} style={styles.image}/>
+                                    )}
+                                />
+                            }
                         </View>
-                        <View style={{height: 150}}></View>
                     </View>
+                    <View style={{height: 100}}></View>
                 </ScrollView>
             </View>
             <View style={styles.bottonTab}>
@@ -298,8 +346,8 @@ function Add() {
                     <TouchableOpacity onPress={() => navigation.navigate('PickPlaceScreen')}>
                         <Feather name='map-pin' style={styles.icon}/>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={uploadPost}>
-                        <Feather name='upload' style={{fontSize: 32, marginHorizontal: 30, color: '#00b060', }}/>
+                    <TouchableOpacity onPress={editPost}>
+                        <Feather name='save' style={{fontSize: 32, marginHorizontal: 30, color: '#00b060', }}/>
                     </TouchableOpacity>
             </View> 
             <Modal isVisible={isModalVisible} animationIn='slideInUp' animationInTiming={500} style={{ }}>
@@ -334,4 +382,4 @@ function Add() {
     );
 };
 
-export default Add;
+export default EditPost;

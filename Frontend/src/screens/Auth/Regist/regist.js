@@ -7,6 +7,9 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {RadioButton} from 'react-native-paper';
+import {useValidation} from 'react-native-form-validator';
+import customValidationMessages from '../../../validate/customValidationMessages';
+import { localhost } from '../../../localhost'
 
 function Regist() {
     const navigation = useNavigation();
@@ -28,92 +31,56 @@ function Regist() {
     const [hidePass, setHidePass] = useState(true);
     const [hideRePass, setHideRePass] = useState(true);
 
+    const {validate, isFieldInError, getErrorsInField, getErrorMessages} =
+    useValidation({
+      state: {
+        fullname,
+        email,
+        username,
+        password,
+        rePassword,
+        birthday,
+        gender
+      },
+      messages: customValidationMessages,
+    });
+
     const onSignUp = () => {
-        fetch('http://192.168.1.253:3000/register', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userName: username,
-                fullName: fullname,
-                email: email,
-                passWord: password
-            })
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            alert(json.message);
-        })
-        .catch((error) => {
-            alert(error);
-        })
-        
-        /*
-        auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(() => {
-            firestore().collection("users")
-                .doc(auth().currentUser.uid)
-                .set({
-                    fullname,
-                    email,
-                    username,
-                    password,
-                    avatar,
-                    bio
+        const isOk = validate({
+            fullname: {maxlength: 30, required: true},
+            username: {require: true},
+            birthday: {required: true, date: "DD-MM-YYYY"},
+            gender: {required: true},
+            email: {require: true, email: true},
+            password: {require: true, hasNumber: true, hasUpperCase: true, hasLowerCase: true, hasSpecialCharacter: true},
+            rePassword: {required: true, equalPassword: password}
+        });
+        if (isOk) {
+            fetch(`http://${localhost}/register`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userName: username,
+                    fullName: fullname,
+                    email: email,
+                    passWord: password,
+                    gender: gender,
+                    birthday: birthday,
+                    rePassword: rePassword
                 })
-            console.log('Tài khoản đã được đăng ký thành công')
-            Alert.alert(
-                "Thông báo",
-                "Đăng ký tài khoản thành công!",
-                [
-                    {
-                        text: "Huỷ",
-                        onPress: () => console.log("Cancel Pressed"),
-                        style: "cancel"
-                    },
-                    { text: "OK", onPress: () => console.log("OK Pressed") }
-                ]
-            );
-            navigation.navigate("AuthStack")
-        })
-        .catch(error => {
-            if (error.code === 'auth/email-already-in-use') {
-                console.log('That email address is already in use!');
-                Alert.alert(
-                    "Thông báo",
-                    "Email đã được sử dụng bởi một tài khoản khác!",
-                    [
-                      {
-                        text: "Huỷ",
-                        onPress: () => console.log("Cancel Pressed"),
-                        style: "cancel"
-                      },
-                      { text: "OK", onPress: () => console.log("OK Pressed") }
-                    ]
-                );
-            }
-            if (error.code === 'auth/invalid-email') {
-                console.log('That email address is invalid!');
-                Alert.alert(
-                    "Thông báo",
-                    "Email không hợp lệ!",
-                    [
-                      {
-                        text: "Cancel",
-                        onPress: () => console.log("Cancel Pressed"),
-                        style: "cancel"
-                      },
-                      { text: "OK", onPress: () => console.log("OK Pressed") }
-                    ]
-                );
-            }
-    
-            console.error(error);
-        })
-        */
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                Alert.alert("Thông báo", json.message)
+                navigation.navigate('Login')
+            })
+            .catch((error) => {
+                alert(error);
+            })
+        }
     }
 
     /* Giới tính */
@@ -122,6 +89,7 @@ function Regist() {
         if (checked) return 0;
         return 1;
     };
+
 
     /* Ngày sinh */
     useEffect(() => {
@@ -151,7 +119,6 @@ function Regist() {
         showMode('date');
     };
 
-
     return (
         <ScrollView>
             <View style={styles.container}>
@@ -171,6 +138,9 @@ function Regist() {
                             onChangeText={fullname => setFullname(fullname)}
                         />
                     </View>
+                    {isFieldInError('fullname') && getErrorsInField('fullname').map(errorMessage => (
+                        <Text style={styles.errMessage}>{errorMessage}</Text>
+                    ))}
                     
                     <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
                         Email
@@ -181,6 +151,9 @@ function Regist() {
                             onChangeText={email => setEmail(email)}
                         />
                     </View>
+                    {isFieldInError('email') && getErrorsInField('email').map(errorMessage => (
+                        <Text style={styles.errMessage}>{errorMessage}</Text>
+                    ))}
 
                     <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
                         Tên tài khoản
@@ -191,6 +164,9 @@ function Regist() {
                             onChangeText={username => setUsername(username)}
                         />
                     </View>
+                    {isFieldInError('username') && getErrorsInField('username').map(errorMessage => (
+                        <Text style={styles.errMessage}>{errorMessage}</Text>
+                    ))}
 
                     <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
                         Giới tính
@@ -200,23 +176,26 @@ function Regist() {
                         value={gender}>
                         <View style={{flexDirection: 'row'}}>
                             <View style={{flexDirection: 'row'}}>
-                            <RadioButton
-                                value="0"
-                                status={checked === '0' ? 'checked' : 'unchecked'}
-                                onValueChange={() => setChecked('0')}
-                            />
-                            <Text style={{paddingTop: 8}}>Nam</Text>
+                                <RadioButton
+                                    value="0"
+                                    status={checked === '0' ? 'checked' : 'unchecked'}
+                                    onValueChange={() => setChecked('0')}
+                                />
+                                <Text style={{paddingTop: 8}}>Nam</Text>
                             </View>
                             <View style={{flexDirection: 'row', paddingLeft: 10}}>
-                            <RadioButton
-                                value="1"
-                                status={checked === '1' ? 'checked' : 'unchecked'}
-                                onValueChange={() => setChecked('1')}
-                            />
-                            <Text style={{paddingTop: 8}}>Nữ</Text>
+                                <RadioButton
+                                    value="1"
+                                    status={checked === '1' ? 'checked' : 'unchecked'}
+                                    onValueChange={() => setChecked('1')}
+                                />
+                                <Text style={{paddingTop: 8}}>Nữ</Text>
                             </View>
                         </View>
                     </RadioButton.Group>
+                    {isFieldInError('gender') && getErrorsInField('gender').map(errorMessage => (
+                        <Text style={styles.errMessage}>{errorMessage}</Text>
+                    ))}
 
                     <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
                         Ngày sinh
@@ -241,6 +220,9 @@ function Regist() {
                             />
                         )}
                     </View>
+                    {isFieldInError('birthday') && getErrorsInField('birthday').map(errorMessage => (
+                        <Text style={styles.errMessage}>{errorMessage}</Text>
+                    ))}
 
                     <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
                         Mật khẩu
@@ -258,6 +240,10 @@ function Regist() {
                             onPress={() => setHidePass(!hidePass)}
                         />
                     </View>
+                    {isFieldInError('password') && getErrorsInField('password').map(errorMessage => (
+                        <Text style={styles.errMessage}>{errorMessage}</Text>
+                    ))}
+
                     <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
                         Nhập lại mật khẩu
                     </Text>
@@ -274,6 +260,9 @@ function Regist() {
                             onPress={() => setHideRePass(!hideRePass)}
                         />
                     </View>
+                    {isFieldInError('rePassword') && getErrorsInField('rePassword').map(errorMessage => (
+                        <Text style={styles.errMessage}>{errorMessage}</Text>
+                    ))}
                     {/*
                         <Text style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
                         Nhập lại mật khẩu

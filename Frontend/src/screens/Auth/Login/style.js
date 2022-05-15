@@ -48,5 +48,10 @@ export const styles = StyleSheet.create({
         borderWidth: 0.5, 
         borderRadius: 8,
         flexDirection: 'row'
-    }
+    },
+    errMessage: {
+        color: 'red',
+        fontStyle: 'italic',
+        paddingBottom: 5
+    },
   });
